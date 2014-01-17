@@ -7,7 +7,7 @@ class AddressesServiceProvider extends ServiceProvider {
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 */
-	protected $defer = true;
+// 	protected $defer = false;
 	
 	/**
 	 * Bootstrap the application events.
@@ -30,7 +30,7 @@ class AddressesServiceProvider extends ServiceProvider {
 		$this->app->booting(function() {
 
 			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
-			$loader->alias('Addresses', '\Conner\Addresses\AddressesFacade');
+			$loader->alias('Addresses', 'Conner\Addresses\AddressesFacade');
 		
 		});
 

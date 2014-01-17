@@ -1,6 +1,6 @@
 <?php namespace Conner\Addresses;
 
-class DatabaseSeeder extends Seeder {
+class DatabaseSeeder extends \Seeder {
 
 	/**
 	 * Run the database seeds.
@@ -8,9 +8,9 @@ class DatabaseSeeder extends Seeder {
 	 * @return void
 	 */
 	public function run() {
-		Eloquent::unguard();
+		\Eloquent::unguard();
 
-		$this->call('GroupTableSeeder');
+		$this->call('CountryTableSeeder');
 		$this->call('StateTableSeeder');
 	}
 

@@ -9,9 +9,8 @@ class AddressesTest extends TestCase {
 	public function setUp() {
 		Illuminate\Foundation\Testing\TestCase::setUp();
 
-		Artisan::call('migrate');
-		Artisan::call('db:seed', array('--class'=>'CountryTableSeeder'));
-		Artisan::call('db:seed', array('--class'=>'StateTableSeeder'));
+		Artisan::call('migrate', array('--package'=>'rtconner\laravel-addresses'));
+		Artisan::call('db:seed', array('--class'=>'Conner\Addresses\DatabaseSeeder'));
 	}
 	
 	public function testCountries() {
