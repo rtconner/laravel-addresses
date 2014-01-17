@@ -1,0 +1,23 @@
+{
+    "name": "rtconner/laravel-addresses",
+    "description": "",
+    "authors": [
+        {
+            "name": "Robert Conner",
+            "email": "rtconner@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Rtconner\\LaravelAddresses\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
