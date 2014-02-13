@@ -1,9 +1,9 @@
 Laravel Addresses Plugin
 ============
 
-Billing / Shipping address storage. Links addresses to a given user_id. 
+Link a list of addresses to a user. Allows to flag address as primary, billing, or shipping. Users have many addresses, but only one primary or shipping or billing.
 
-Currently this thing is linked closely with Sentry. I'm trying to remove that dependancy (but not sure how yet)
+Currently this thing is linked to Sentry. I'm trying to remove that dependancy (but not sure how yet)
 
 #### Composer Install
 
@@ -41,7 +41,13 @@ Currently this thing is linked closely with Sentry. I'm trying to remove that de
     
     Addresses::setPrimary($address); // set address as primary (and unset the others)
     
-## View Templates
+	Addresses::getPrimary($user);    
+    
+	Addresses::getShipping($user);    
+
+	Addresses::getBilling($user);    
+
+#### View Templates
 
 	@include('addresses::fields') <!-- bootstrap fields with no form tags -->
 	
