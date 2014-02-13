@@ -14,11 +14,11 @@ class Addresses {
 	 * @param array $data
 	 * @return object $address or null
 	 */
-	public function createAddress(array $data) {
+	public function createAddress($data = null) {
 		$user = \Sentry::getUser();
-
+		if(is_null($data))
+		
 		$address = new Address($data);
-		unset($address->id);
 		
 		$address->user_id = $user->id;
 		if($address->save()) {
@@ -26,7 +26,33 @@ class Addresses {
 		}
 	}
 	
-	function getValidator($data = null) {
+	/**
+	 * Create a new address using post array data
+	 *
+	 * @param array $data
+	 * @return object $address or null
+	 */
+	public function updateAddress($addressId, $data = null) {
+		$user = \Sentry::getUser();
+		if(is_null($data))
+	
+			unset($data['id']);
+		$address = new Address($data);
+	
+		$address->user_id = $user->id;
+		if($address->save()) {
+			return $address;
+		}
+	}
+	
+	/**
+	 * Return instance of Illuminate\Validation\Validator that is setup with Address rules and data (from html input)
+	 * Addresses::getValidator()->fails(); // test input from user
+	 * 
+	 * @param array $input input array from user (or null to default to Input::all())
+	 * @return Illuminate\Validation\Validator ready to test for fails|passes
+	 */
+	function getValidator($input = null) {
 		$rules = Address::rules();
 		
 		if(is_null($data)) {

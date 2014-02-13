@@ -190,7 +190,8 @@ class AddressesTest extends TestCase {
 	}
 	
 	public function testCreate() {
-		$address = \Addresses::createAddress(array('id'=>23,
+		$address = new Address(array(
+				'id'=>23,
 				'street'=>'123 Test Street',
 				'city'=>'Las Vegas',
 				'state'=>'Nevada',
