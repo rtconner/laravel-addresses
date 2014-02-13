@@ -11,6 +11,11 @@ class AddressesTest extends TestCase {
 
 		Artisan::call('migrate', array('--package'=>'rtconner\laravel-addresses'));
 		Artisan::call('db:seed', array('--class'=>'Conner\Addresses\DatabaseSeeder'));
+		
+		$user = new \Cartalyst\Sentry\Users\Eloquent\User;
+		$user->id = 1;
+		
+		\Sentry::setUser($user);
 	}
 	
 	public function testCountries() {
@@ -148,6 +153,54 @@ class AddressesTest extends TestCase {
 				'only' => array('tag' => 'em')));
 		$this->assertTag($matcher, $html);
 		
+	}
+	
+	public function testValidator() {
+		$data = array(
+			'street'=>'123 Test Street',
+			'city'=>'Las Vegas',
+			'state'=>'Nevada',
+			'country'=>'US',
+			'zip'=>'12345',
+			'phone'=>'(234) 234-2345',
+		);
+		
+		$valid = \Addresses::getValidator($data);
+		$this->assertTrue($valid->passes());
+		
+		$data = array(
+				'street'=>'123 Test Street',
+				'city'=>'Las Vegas',
+				'state'=>'Nevada',
+				'country'=>'US',
+				'zip'=>'12345-2345',
+		);
+		$valid = \Addresses::getValidator($data);
+		$this->assertTrue($valid->passes());
+
+		$data = array(
+				'street'=>'123 Test Street',
+				'city'=>'Las Vegas',
+				'state'=>'Nevada',
+				'country'=>'US',
+				'zip'=>'12345-23457',
+		);
+		$valid = \Addresses::getValidator($data);
+		$this->assertTrue($valid->fails());
+	}
+	
+	public function testCreate() {
+		$address = \Addresses::createAddress(array('id'=>23,
+				'street'=>'123 Test Street',
+				'city'=>'Las Vegas',
+				'state'=>'Nevada',
+				'country'=>'US',
+				'zip'=>'23455',
+				'phone'=>'(234) 234-2345',
+		));
+
+		$this->assertInternalType('integer', $address->id);
+		$this->assertNotEquals($address->id, 23);
 	}
 	
 }

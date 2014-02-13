@@ -2,19 +2,25 @@
 
 class Address extends \Eloquent {
 
-    protected $table = 'addresses';
-    public $timestamps = false;
+	protected $table = 'addresses';
+	public $timestamps = false;
+	protected $fillable = array('addressee', 'organization', 'street', 'street_extra', 'city', 'state', 'zip', 'country', 'phone');
+	protected $guarded = array('id', 'state_a2', 'country_a2', 'state_name', 'country_name', 'user_id');
 
-    protected static $rules = array(
-		'user_id' => array('required'),
-		'street' => array('required'),
-		'city' => array('required'),
-		'state_a2' => array('required'),
-    );
+	public static function rules() {
+		return array(
+			'adressee'=>'Max:100',
+			'street'=>'required|Max:100',
+			'city'=>'required',
+			'state_a2'=>'required|Alpha|size:2',
+			'country_a2'=>'required|Alpha|size:2',
+			'zip'=>'required|AlphaDash|Min:5|Max:10', // https://www.barnesandnoble.com/help/cds2.asp?PID=8134
+		);
+	}
 
-    public function getCountryAttribute() {
-    	return $this->attributes['country_a2'];
-    }
+	public function getCountryAttribute() {
+		return $this->attributes['country_a2'];
+	}
     
     public function setCountryNameAttribute() {
     	throw new InvalidOperationException;

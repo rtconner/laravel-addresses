@@ -7,7 +7,37 @@ use Cache;
  * Primary handler for managing addresses
  */
 class Addresses {
+	
+	/**
+	 * Create a new address using post array data
+	 * 
+	 * @param array $data
+	 * @return object $address or null
+	 */
+	public function createAddress(array $data) {
+		$user = \Sentry::getUser();
 
+		$address = new Address($data);
+		unset($address->id);
+		
+		$address->user_id = $user->id;
+		if($address->save()) {
+			return $address;
+		}
+	}
+	
+	function getValidator($data = null) {
+		$rules = Address::rules();
+		
+		if(is_null($data)) {
+			$data = Input::all();
+		}
+		
+		$address = new Address($data);
+		
+		return \Validator::make($address->toArray(), $rules);
+	}
+	
 	/**
 	 * Return Collection of Addresses owned by the given userID.
 	 * 
