@@ -17,12 +17,14 @@ class CreateAddresses extends Migration {
 			$table->string('state_a2', 2);
 			$table->string('state_name', 60);
 			$table->string('zip', 11);
-			$table->string('country_a2', 2)->default('US');
-			$table->string('country_name', 60)->default('United States');
+			$table->string('country_a2', 2)->default(\Config::get('addresses::default_country'));
+			$table->string('country_name', 60)->default(\Config::get('addresses::default_country_name'));
 			$table->string('phone', 20)->nullable();
-			$table->boolean('is_primary')->default(false)->index();
-			$table->boolean('is_billing')->default(false)->index();
-			$table->boolean('is_shipping')->default(false)->index();
+			
+			foreach(\Config::get('addresses::flags') as $flag) {
+				$table->boolean('is_'.$flag)->default(false)->index();
+			}
+			
 			$table->float('latitude')->nullable();
 			$table->float('longitude')->nullable();
 		});

@@ -137,8 +137,7 @@ class AddressesTest extends TestCase {
 		
 		Addresses::setBilling($address1);
 		$this->assertNotEquals($address2->id, \Addresses::getBilling($userId)->id);
-		
-		
+
 		Addresses::setShipping($address3);
 		$this->assertEquals($address3->id, \Addresses::getShipping($userId)->id);
 		
@@ -191,8 +190,6 @@ class AddressesTest extends TestCase {
 	
 	public function testCreate() {
 		$address = Addresses::createAddress(array(
-				'id'=>23,
-				'user_id'=>1,
 				'street'=>'123 Test Street',
 				'city'=>'Las Vegas',
 				'state'=>'Nevada',
@@ -202,7 +199,6 @@ class AddressesTest extends TestCase {
 		));
 	
 		$this->assertInternalType('integer', $address->id);
-		$this->assertNotEquals($address->id, 23);
 	}
 	
 }

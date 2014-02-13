@@ -43,12 +43,16 @@
 	</div>
 </div>
 		
-<div class="form-group">
+@if(\Config::get('addresses::show_country'))
+
+	<div class="form-group">
 	{{ Form::label('country', 'Country', array('class'=>'col-sm-3 control-label')); }}
 	<div class="col-sm-8">
 		{{ Addresses::selectCountry('country', 'US', array('class'=>'form-control')); }}
 	</div>
 </div>
+
+@endif
 	
 <div class="form-group">
 	{{ Form::label('phone', 'Phone Number', array('class'=>'col-sm-3 control-label')); }}
@@ -57,32 +61,16 @@
 	</div>
 </div>
 	
-<div class="form-group">
-	<div class="col-sm-offset-3 col-sm-8">
-		<div class="checkbox">
-			<label>
-			{{ Form::checkbox('is_primary'); }}
-			Set as Primary Address</label>
-		</div>
-	</div>
-</div>
+@foreach(\Config::get('addresses::flags') as $flag)
 	
 <div class="form-group">
 	<div class="col-sm-offset-3 col-sm-8">
 		<div class="checkbox">
 			<label>
-			{{ Form::checkbox('is_billing'); }}
-			Set as Billing Address</label>
+			{{ Form::checkbox('is_'.$flag); }}
+			Set as {{ ucfirst($flag) }} Address</label>
 		</div>
 	</div>
 </div>
 	
-<div class="form-group">
-	<div class="col-sm-offset-3 col-sm-8">
-		<div class="checkbox">
-			<label>
-			{{ Form::checkbox('is_shipping'); }}
-			Set as Shipping Address</label>
-		</div>
-	</div>
-</div>
+@endforeach

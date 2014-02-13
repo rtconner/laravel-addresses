@@ -51,6 +51,8 @@ Currently this thing is linked to Sentry. I'm trying to remove that dependancy (
 
 	@include('addresses::fields') <!-- bootstrap fields with no form tags -->
 	
-	{{ $address->toHtml() }} <!-- organized html of address --> 
+	@foreach($addresses as $address)
+		@include('addresses::view', compact('separator'=>'<br>')) <!-- read-only html of address -->
+	@endforeach 
 	
 You can make call direcly on the Conners\Addresses\Address model if you want. But you just have to be careful when reading/writing. The methods provided on \Addresses handle checks against the currently logged in user and making sure there are no duplicate primary addresses.

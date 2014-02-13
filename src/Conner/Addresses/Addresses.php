@@ -2,11 +2,14 @@
 
 use Illuminate\Database\Eloquent\Collection;
 use Cache;
+use Conner\Inbox\NotLoggedInException;
 
 /**
  * Primary handler for managing addresses
  */
 class Addresses {
+	
+	private static $userId = null;
 	
 	/**
 	 * Create a new address using post array data
@@ -15,14 +18,13 @@ class Addresses {
 	 * @return object $address or null
 	 */
 	public function createAddress($data = null) {
-		$user = \Sentry::getUser();
 		if(is_null($data)) {
 			$data = \Input::all();
 		}
 
 		$address = new Address($data);
 		
-		$address->user_id = $user->id;
+		$address->user_id = self::userId();
 		if($address->save()) {
 			self::checkFlags($address);
 			return $address;
@@ -37,13 +39,12 @@ class Addresses {
 	 * @return object $address or null
 	 */
 	public function updateAddress($address, $data = null) {
-		$user = \Sentry::getUser();
 		if(is_null($data)) {
 			$data = \Input::all();
 		}
 	
 		if(!is_object($address)) {
-			$address = Address::where('user_id', $user->id)
+			$address = Address::where('user_id', self::userId())
 				->where('id', $address)
 				->first();
 		}
@@ -61,15 +62,15 @@ class Addresses {
 	 * @param object or id $address
 	 */
 	public function deleteAddress($address) {
-		$user = \Sentry::getUser();
-
+		$userId = self::userId();
+		
 		if(!is_object($address)) {
-			$address = Address::where('user_id', $user->id)
+			$address = Address::where('user_id', $userId)
 			->where('id', $address)
 			->first();
 		}
 
-		if($address->user_id == $user->id) {
+		if($address->user_id == $userId) {
 			$address->delete();
 		}
 	}
@@ -98,7 +99,9 @@ class Addresses {
 	 * 
 	 * @param Collection
 	 */
-	public function getAll($userId) {
+	public function getAll($userId=null) {
+		$userId = $userId ?: self::userId();
+
 		return Address::where('user_id', $userId)
 			->orderBy('is_primary', 'DESC')
 			->orderBy('is_shipping', 'DESC')
@@ -107,92 +110,57 @@ class Addresses {
 			->get();
 	}
 
-	/**
-	 * Return Collection of Addresses owned by the given userID
-	 *
-	 * @param Collection
-	 */
-	public function getPrimary($userId) {
-		return Address::where('user_id', $userId)
-		->where('is_primary', true)
-		->first();
+	public function __call($name, $arguments) {
+		$flags = \Config::get('addresses::flags');
+
+		foreach($flags as $flag) {
+			if($name == 'get'.ucfirst($flag)) {
+				array_unshift($arguments, $flag);
+				return call_user_func_array('self::getFlag', $arguments);
+			}
+			
+			if($name == 'set'.ucfirst($flag)) {
+				array_unshift($arguments, $flag);
+				return call_user_func_array('self::setFlag', $arguments);
+			}
+		}
+		
+		$class = get_class($this);
+		$trace = debug_backtrace();
+		$file = $trace[0]['file'];
+		$line = $trace[0]['line'];
+		trigger_error("Call to undefined method $class::$name()", E_USER_ERROR);
 	}
 	
 	/**
-	 * Return Collection of Addresses owned by the given userID
+	 * Get the bool value of a flag. Called by using Addresses::getFlagname($userId)
 	 *
-	 * @param Collection
+	 * @param $userId or null
+	 * @return Address
 	 */
-	public function getBilling($userId) {
-		return Address::where('user_id', $userId)
-			->where('is_billing', true)
+	private function getFlag($flag, $userId=null) {
+		$userId = $userId ?: self::userId();
+
+		return Address::where('user_id', '=', $userId)
+			->where('is_'.$flag, true)
 			->first();
 	}
 	
 	/**
-	 * Return Collection of Addresses owned by the given userID
-	 *
-	 * @param Collection
-	 */
-	public function getShipping($userId) {
-		return Address::where('user_id', $userId)
-			->where('is_shipping', true)
-			->first();
-	}
-	
-	/**
-	 * Set primary address for the given user. Unsets all other addresses for that
-	 * user as non-primary
+	 * Set value of a flag. Unsets all other addresses for that user.
+	 * Called by using Addresses::setFlagname($address)
 	 *
 	 * @param mixed $objectOrId primary address id or object instance
 	 */
-	public function setPrimary($address) {
+	private function setFlag($flag, $address) {
 		if(!is_object($address)) {
 			$address = Address::find($address);
 		}
 		
 		if($userId = $address->user_id) {
-			Address::where('user_id', '=', $userId)->update(array('is_primary'=>false));
-			$address->is_primary = true;
+			Address::where('user_id', '=', self::userId())->update(array('is_'.$flag=>false));
+			$address->{'is_'.$flag} = true;
 			$address->save();
-		}
-	}
-
-	/**
-	 * Set billing address for the given user. Unsets all other addresses for that
-	 * user as non-billing
-	 *
-	 * @param mixed $objectOrId primary address id or object instance
-	 */
-	public function setBilling($address) {
-		if(!is_object($address)) {
-			$address = Address::find($address);
-		}
-	
-		if($userId = $address->user_id) {
-			Address::where('user_id', $userId)->update(array('is_billing'=>false));
-			$address->is_billing = true;
-			$address->save();
-		}
-	}
-
-	/**
-	 * Set shipping address for the given user. Unsets all other addresses for that
-	 * user as non-shipping
-	 *
-	 * @param mixed $objectOrId primary address id or object instance
-	 */
-	public function setShipping($address) {
-		if(!is_object($address)) {
-			$address = Address::find($address);
-		}
-	
-		if($userId = $address->user_id) {
-			Address::where('user_id', $userId)->update(array('is_shipping'=>false));
-			$address->is_shipping = true;
-			$address->save();
-		} else {
-			throw new UserNotFoundException;
 		}
 	}
 	
@@ -313,6 +281,19 @@ class Addresses {
 				call_user_func('self::set'.ucfirst($flag), $address);
 			}
 		}
+	}
+	
+	private function userId() {
+		if(self::$userId) {
+			return self::$userId;
+		}
+		
+		if($user = call_user_func(\Config::get('addresses::current_user_func'))) {
+			self::$userId = $user->id;
+			return self::$userId;
+		}
+
+		throw new NotLoggedInException;
 	}
 	
 }
