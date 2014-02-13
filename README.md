@@ -3,7 +3,8 @@ Laravel Addresses Plugin
 
 Link a list of addresses to a user. Allows to flag address as primary, billing, or shipping. Users have many addresses, but only one primary or shipping or billing.
 
-Currently this thing is linked to Sentry. I'm trying to remove that dependancy (but not sure how yet)
+Sample views and controller are included. I don't recoment you use them directly, butjust use them as example code to copy and paste.
+
 
 #### Composer Install
 
