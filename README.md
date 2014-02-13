@@ -21,12 +21,6 @@ Currently this thing is linked to Sentry. I'm trying to remove that dependancy (
 		'Conner\Addresses\AddressesServiceProvider',
 	),
 	
-#### Setup your User (this is not required, just a perk)
-
-    class User extends \Eloquent {
-		use \Conner\Addresses\Addressable;
-    }
-
 #### Sample Usage
 
     \Addresses::getAll($user->id); // get all users
