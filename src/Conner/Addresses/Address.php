@@ -4,10 +4,14 @@ class Address extends \Eloquent {
 
 	protected $table = 'addresses';
 	public $timestamps = false;
-	protected $fillable = array('addressee', 'organization', 'street', 'street_extra', 'city', 'state', 'zip', 'country', 'phone');
+	protected $fillable = array('addressee', 'organization', 'street', 'street_extra', 'city', 'state', 'zip', 'country', 'phone', 'is_primary', 'is_shipping', 'is_billing');
 	protected $guarded = array('id', 'state_a2', 'country_a2', 'state_name', 'country_name', 'user_id');
-	protected $appends = array('state', 'state_name', 'country', 'country_name');
+	protected $appends = array('state', 'country');
 
+// 	public static function boot() {
+// 		parent::boot();
+// 	}
+	
 	public static function rules() {
 		return array(
 			'adressee'=>'Max:100',
@@ -28,7 +32,7 @@ class Address extends \Eloquent {
     }
     
     public function getStateAttribute() {
-    	return $this->attributes['state_a2'];
+    	return @$this->attributes['state_a2'];
     }
     
     public function setStateNameAttribute() {
@@ -61,8 +65,10 @@ class Address extends \Eloquent {
 	    		$this->attributes['state_a2'] = $state->a2;
 	    	}
     	}
-		
-    	$this->attributes['state_name'] = Addresses::stateName($this->attributes['state_a2']);
+
+    	if(!empty($this->attributes['state_a2'])) {
+    		$this->attributes['state_name'] = Addresses::stateName($this->attributes['state_a2']);
+    	}
     }
     
     function toHtml($separator='<br />') {
@@ -83,7 +89,13 @@ class Address extends \Eloquent {
     		}
     	}
     	
-    	return implode($separator, $html);
+    	$return = implode($separator, $html);
+    	
+    	if($this->is_primary) {
+    		$return = '<strong>'.$return.'</strong>';
+    	}
+    	
+    	return $return;
     }
     
 }

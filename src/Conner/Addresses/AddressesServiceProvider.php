@@ -35,5 +35,9 @@ class AddressesServiceProvider extends ServiceProvider {
 		});
 
 	}
+
+	public function provides() {
+		return array('addresses');
+	}
 	
 }

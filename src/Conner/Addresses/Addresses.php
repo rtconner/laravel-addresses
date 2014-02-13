@@ -24,6 +24,9 @@ class Addresses {
 		
 		$address->user_id = $user->id;
 		if($address->save()) {
+			
+			dd(Config::get('conner/addresses::flags'));
+			
 			return $address;
 		}
 	}
@@ -31,21 +34,51 @@ class Addresses {
 	/**
 	 * Create a new address using post array data
 	 *
+	 * @param object or id $address
 	 * @param array $data
 	 * @return object $address or null
 	 */
-	public function updateAddress($addressId, $data = null) {
+	public function updateAddress($address, $data = null) {
 		$user = \Sentry::getUser();
 		if(is_null($data)) {
 			$data = \Input::all();
 		}
 	
-		$address = Address::where('user_id', $user->id)
-			->where('id', $addressId)
-			->first();
+		if(!is_object($address)) {
+			$address = Address::where('user_id', $user->id)
+				->where('id', $address)
+				->first();
+		}
 		
 		if($address->update($data)) {
+
+			foreach(array('primary', 'shipping', 'billing') as $flag) {
+				if($address->{'is_'.$flag}) {
+					call_user_func('self::set'.ucfirst($flag), $address);
+				}
+			}
+			
 			return $address;
+		}
+	}
+
+	/**
+	 * Delete address. Will delete it if it can. This function does a check to make sure logged in
+	 * user owns the address
+	 *
+	 * @param object or id $address
+	 */
+	public function deleteAddress($address) {
+		$user = \Sentry::getUser();
+
+		if(!is_object($address)) {
+			$address = Address::where('user_id', $user->id)
+			->where('id', $address)
+			->first();
+		}
+
+		if($address->user_id == $user->id) {
+			$address->delete();
 		}
 	}
 	
@@ -59,11 +92,11 @@ class Addresses {
 	function getValidator($input = null) {
 		$rules = Address::rules();
 		
-		if(is_null($data)) {
-			$data = Input::all();
+		if(is_null($input)) {
+			$input = \Input::all();
 		}
 		
-		$address = new Address($data);
+		$address = new Address($input);
 		
 		return \Validator::make($address->toArray(), $rules);
 	}
@@ -75,9 +108,10 @@ class Addresses {
 	 */
 	public function getAll($userId) {
 		return Address::where('user_id', $userId)
-			->orderBy('is_primary', 'ASC')
-			->orderBy('is_shipping', 'ASC')
-			->orderBy('is_billing', 'ASC')
+			->orderBy('is_primary', 'DESC')
+			->orderBy('is_shipping', 'DESC')
+			->orderBy('is_billing', 'DESC')
+			->orderBy('id', 'ASC')
 			->get();
 	}
 
@@ -120,10 +154,10 @@ class Addresses {
 	 *
 	 * @param mixed $objectOrId primary address id or object instance
 	 */
-	public function setPrimary($objectOrId) {
-		$address = is_numeric($objectOrId)
-			? Address::find($objectOrId)
-			: $objectOrId;
+	public function setPrimary($address) {
+		if(!is_object($address)) {
+			$address = Address::find($address);
+		}
 		
 		if($userId = $address->user_id) {
 			Address::where('user_id', '=', $userId)->update(array('is_primary'=>false));
@@ -138,10 +172,10 @@ class Addresses {
 	 *
 	 * @param mixed $objectOrId primary address id or object instance
 	 */
-	public function setBilling($objectOrId) {
-		$address = is_numeric($objectOrId)
-			? Address::find($objectOrId)
-			: $objectOrId;
+	public function setBilling($address) {
+		if(!is_object($address)) {
+			$address = Address::find($address);
+		}
 	
 		if($userId = $address->user_id) {
 			Address::where('user_id', $userId)->update(array('is_billing'=>false));
@@ -156,10 +190,10 @@ class Addresses {
 	 *
 	 * @param mixed $objectOrId primary address id or object instance
 	 */
-	public function setShipping($objectOrId) {
-		$address = is_numeric($objectOrId)
-			? Address::find($objectOrId)
-			: $objectOrId;
+	public function setShipping($address) {
+		if(!is_object($address)) {
+			$address = Address::find($address);
+		}
 	
 		if($userId = $address->user_id) {
 			Address::where('user_id', $userId)->update(array('is_shipping'=>false));
