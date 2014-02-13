@@ -24,9 +24,7 @@ class Addresses {
 		
 		$address->user_id = $user->id;
 		if($address->save()) {
-			
-			dd(Config::get('conner/addresses::flags'));
-			
+			self::checkFlags($address);
 			return $address;
 		}
 	}
@@ -51,13 +49,7 @@ class Addresses {
 		}
 		
 		if($address->update($data)) {
-
-			foreach(array('primary', 'shipping', 'billing') as $flag) {
-				if($address->{'is_'.$flag}) {
-					call_user_func('self::set'.ucfirst($flag), $address);
-				}
-			}
-			
+			self::checkFlags($address);
 			return $address;
 		}
 	}
@@ -312,6 +304,15 @@ class Addresses {
 		unset($options['country']);
 
 		return \Form::select($name, $list, $selected, $options);
+	}
+	
+	private function checkFlags($address) {
+		$flags = \Config::get('addresses::flags');
+		foreach($flags as $flag) {
+			if($address->{'is_'.$flag}) {
+				call_user_func('self::set'.ucfirst($flag), $address);
+			}
+		}
 	}
 	
 }
