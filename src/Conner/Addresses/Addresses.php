@@ -16,8 +16,10 @@ class Addresses {
 	 */
 	public function createAddress($data = null) {
 		$user = \Sentry::getUser();
-		if(is_null($data))
-		
+		if(is_null($data)) {
+			$data = \Input::all();
+		}
+
 		$address = new Address($data);
 		
 		$address->user_id = $user->id;
@@ -34,13 +36,15 @@ class Addresses {
 	 */
 	public function updateAddress($addressId, $data = null) {
 		$user = \Sentry::getUser();
-		if(is_null($data))
+		if(is_null($data)) {
+			$data = \Input::all();
+		}
 	
-			unset($data['id']);
-		$address = new Address($data);
-	
-		$address->user_id = $user->id;
-		if($address->save()) {
+		$address = Address::where('user_id', $user->id)
+			->where('id', $addressId)
+			->first();
+		
+		if($address->update($data)) {
 			return $address;
 		}
 	}

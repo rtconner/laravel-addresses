@@ -190,8 +190,9 @@ class AddressesTest extends TestCase {
 	}
 	
 	public function testCreate() {
-		$address = new Address(array(
+		$address = Addresses::createAddress(array(
 				'id'=>23,
+				'user_id'=>1,
 				'street'=>'123 Test Street',
 				'city'=>'Las Vegas',
 				'state'=>'Nevada',
@@ -199,7 +200,7 @@ class AddressesTest extends TestCase {
 				'zip'=>'23455',
 				'phone'=>'(234) 234-2345',
 		));
-
+	
 		$this->assertInternalType('integer', $address->id);
 		$this->assertNotEquals($address->id, 23);
 	}
