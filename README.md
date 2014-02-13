@@ -41,11 +41,11 @@ Currently this thing is linked to Sentry. I'm trying to remove that dependancy (
     
     Addresses::setPrimary($address); // set address as primary (and unset the others)
     
-	Addresses::getPrimary($user);    
+	Addresses::getPrimary();    
     
-	Addresses::getShipping($user);    
+	Addresses::getShipping($userId);    
 
-	Addresses::getBilling($user);    
+	Addresses::getBilling();    
 
 #### View Templates
 
