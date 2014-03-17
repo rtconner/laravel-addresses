@@ -8,7 +8,13 @@ class CreateAddresses extends Migration {
 		
 		Schema::create('addresses', function($table) {
 			$table->increments('id');
-			$table->string('user_id', 10)->unsigned();
+
+			$userModel = \Config::get('addresses::user.model');
+			$userIdType = DB::connection()->getDoctrineColumn(with(new $userModel)->getTable(), 'id')->getType();
+			$userIdType->getBindingType() == 1 // test if integer
+				? $table->integer('user_id')->unsigned()->index()
+				: $table->string('user_id', 36)->index();
+			
 			$table->string('addressee', 50)->nullable();
 			$table->string('organization', 50)->nullable();
 			$table->string('street', 50);

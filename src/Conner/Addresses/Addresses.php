@@ -288,7 +288,7 @@ class Addresses {
 			return self::$userId;
 		}
 		
-		if($user = call_user_func(\Config::get('addresses::current_user_func'))) {
+		if($user = call_user_func(\Config::get('addresses::user.current'))) {
 			self::$userId = $user->id;
 			return self::$userId;
 		}

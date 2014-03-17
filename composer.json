@@ -2,7 +2,7 @@
     "name": "rtconner/laravel-addresses",
     "description": "Helps you build multiple address storage like Amazon and PayPal have",
 	"license": "MIT",
-	"homepage": "https://github.com/rtconner/laravel-addresses",
+	"homepage": "http://local.s.smarter/packages/laravel-address-book",
 	"keywords": ["laravel", "address", "addresses"],
     "authors": [
         {

@@ -17,4 +17,15 @@ return array(
 	// full name of the default country
 	'default_country_name'=>'United States',
 	
+
+	'user'=>array(
+	
+		// user model class
+		'model'=>'\Cartalyst\Sentry\Users\Eloquent\User',
+
+		// Function to fetch currently logged in user. Any valid $callback to call_user_func works here
+		'current'=>'\Sentry::getUser',
+		
+	),
+	
 );
