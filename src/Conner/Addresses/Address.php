@@ -10,7 +10,7 @@ class Address extends \Eloquent {
 
 	public static function boot() {
 		parent::boot();
-		
+
 		if(\Config::get('addresses::geocode')) {
 			static::saving(function($address) {
 				$address->geocode();
@@ -30,7 +30,11 @@ class Address extends \Eloquent {
 	}
 
 	public function getCountryAttribute() {
-		return $this->attributes['country_a2'];
+		if(array_key_exists('country_a2', $this->attributes)) {
+			return $this->attributes['country_a2'];
+		}
+
+		return \Config::get('addresses::default_country');
 	}
     
     public function setCountryNameAttribute() {
@@ -122,8 +126,8 @@ class Address extends \Eloquent {
 	    
 	    $this->latitude = $output->results[0]->geometry->location->lat;
 	    $this->longitude = $output->results[0]->geometry->location->lng;
-	    
-    	return $this;
+
+	    return $this;
     }
     
 }

@@ -13,7 +13,7 @@ class AddressesServiceProvider extends ServiceProvider {
 	 * Bootstrap the application events.
 	 */
 	public function boot() {
-		$this->package('conner/addresses');
+		$this->package('rtconner/laravel-addresses', 'addresses');
 	}
 	
 	/**
