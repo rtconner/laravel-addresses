@@ -17,6 +17,10 @@ return array(
 	// full name of the default country
 	'default_country_name'=>'United States',
 	
+	// if this is true, two things happen ..
+	// 1. latitude and longitude will be saved into the address table
+	// 2. saves run a bit slower because we have to hit google servers
+	'geocode'=>false,
 
 	'user'=>array(
 	

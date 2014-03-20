@@ -9,6 +9,8 @@ class AddressesTest extends TestCase {
 	public function setUp() {
 		Illuminate\Foundation\Testing\TestCase::setUp();
 
+		Artisan::call('migrate', array('--package'=>'cartalyst\sentry'));
+// 		Artisan::call('migrate');
 		Artisan::call('migrate', array('--package'=>'rtconner\laravel-addresses'));
 		Artisan::call('db:seed', array('--class'=>'Conner\Addresses\DatabaseSeeder'));
 		
@@ -199,6 +201,21 @@ class AddressesTest extends TestCase {
 		));
 	
 		$this->assertInternalType('integer', $address->id);
+	}
+	
+	public function testGeocode() {
+		$address = Addresses::createAddress(array(
+			'street'=>'6225 Vectorspace Blvd',
+			'city'=>'Titusville',
+			'state'=>'FL',
+			'country'=>'US',
+			'zip'=>'32780',
+		));
+	
+		$address->geocode();
+
+		$this->assertEquals(28.5267162, $address->latitude);
+		$this->assertEquals(-80.7824947, $address->longitude);
 	}
 	
 }

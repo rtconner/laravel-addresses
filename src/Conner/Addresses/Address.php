@@ -8,9 +8,15 @@ class Address extends \Eloquent {
 	protected $guarded = array('id', 'state_a2', 'country_a2', 'state_name', 'country_name', 'user_id');
 	protected $appends = array('state', 'country');
 
-// 	public static function boot() {
-// 		parent::boot();
-// 	}
+	public static function boot() {
+		parent::boot();
+		
+		if(\Config::get('addresses::geocode')) {
+			static::saving(function($address) {
+				$address->geocode();
+			});
+		}
+	}
 	
 	public static function rules() {
 		return array(
@@ -96,6 +102,28 @@ class Address extends \Eloquent {
     	}
     	
     	return $return;
+    }
+    
+    /**
+     * Using the address in memory, fetch get latitude and longitude
+     * from google maps api and set them as attributes
+     */
+    public function geocode() {
+    	if(!empty($this->zip)) {
+	    	$string[] = $this->street;
+	    	$string[] = sprintf('%s, %s %s', $this->city, $this->state, $this->zip);
+	    	$string[] = $this->country_name;
+    	}
+    	
+	    $query = str_replace(' ', '+', implode(', ', $string));
+	    
+	    $geocode = file_get_contents('http://maps.google.com/maps/api/geocode/json?address='.$query.'&sensor=false');
+	    $output= json_decode($geocode);
+	    
+	    $this->latitude = $output->results[0]->geometry->location->lat;
+	    $this->longitude = $output->results[0]->geometry->location->lng;
+	    
+    	return $this;
     }
     
 }
