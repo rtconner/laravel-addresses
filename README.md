@@ -50,4 +50,4 @@ Sample views and controller are included. I don't recoment you use them directly
 		@include('addresses::view', compact('separator'=>'<br>')) <!-- read-only html of address -->
 	@endforeach 
 	
-You can make call direcly on the Conners\Addresses\Address model if you want. But you just have to be careful when reading/writing. The methods provided on \Addresses handle checks against the currently logged in user and making sure there are no duplicate primary addresses.
+You can make call direcly on the Conner\Addresses\Address model if you want. But you just have to be careful when reading/writing. The methods provided on \Addresses handle checks against the currently logged in user and making sure there are no duplicate primary addresses.
