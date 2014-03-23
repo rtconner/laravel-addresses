@@ -11,11 +11,11 @@ class Address extends \Eloquent {
 	public static function boot() {
 		parent::boot();
 
-		if(\Config::get('addresses::geocode')) {
-			static::saving(function($address) {
+		static::saving(function($address) {
+			if(\Config::get('addresses::geocode')) {
 				$address->geocode();
-			});
-		}
+			}
+		});
 	}
 	
 	public static function rules() {
