@@ -19,14 +19,19 @@ class Address extends \Eloquent {
 	}
 	
 	public static function rules() {
-		return array(
+		$rules = array(
 			'adressee'=>'Max:100',
 			'street'=>'required|Max:100',
 			'city'=>'required',
 			'state_a2'=>'required|Alpha|size:2',
-			'country_a2'=>'required|Alpha|size:2',
 			'zip'=>'required|AlphaDash|Min:5|Max:10', // https://www.barnesandnoble.com/help/cds2.asp?PID=8134
 		);
+		
+		if(\Config::get('addresses::show_country')) {
+			$rules['country_a2'] = 'required|Alpha|size:2';
+		}
+		
+		return $rules;
 	}
 
 	public function getCountryAttribute() {
