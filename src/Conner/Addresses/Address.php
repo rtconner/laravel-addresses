@@ -4,7 +4,7 @@ class Address extends \Eloquent {
 
 	protected $table = 'addresses';
 	public $timestamps = false;
-	protected $fillable = array('addressee', 'organization', 'street', 'street_extra', 'city', 'state', 'zip', 'country', 'phone', 'is_primary', 'is_shipping', 'is_billing');
+	protected $fillable = array('addressee', 'organization', 'street', 'street_extra', 'city', 'state', 'zip', 'country', 'phone');
 	protected $guarded = array('id', 'state_a2', 'country_a2', 'state_name', 'country_name', 'user_id');
 	protected $appends = array('state', 'country');
 
@@ -34,6 +34,24 @@ class Address extends \Eloquent {
 		return $rules;
 	}
 
+	/**
+	 * Return a "display formatted" version of the address
+	 */
+	public function getDisplayAttribute() {
+		$str = array();
+		foreach(array('street', 'street_extra') as $line) {
+			if(strlen($this->{$line})) {
+				$str []= $this->{$line};
+			}
+		}
+		 
+		if(strlen($this->city)) {
+			$str []= sprintf('%s, %s %s', $this->city, $this->state, $this->zip);
+		}
+		 
+		return implode(', ', $str);
+	}
+	
 	public function getCountryAttribute() {
 		if(array_key_exists('country_a2', $this->attributes)) {
 			return $this->attributes['country_a2'];

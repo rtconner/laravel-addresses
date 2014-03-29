@@ -102,14 +102,31 @@ class Addresses {
 	public function getAll($userId=null) {
 		$userId = $userId ?: self::userId();
 
-		return Address::where('user_id', $userId)
-			->orderBy('is_primary', 'DESC')
-			->orderBy('is_shipping', 'DESC')
-			->orderBy('is_billing', 'DESC')
-			->orderBy('id', 'ASC')
+		$builder = Address::where('user_id', $userId);
+		
+		$flags = \Config::get('addresses::flags');
+		foreach($flags as $flag) {
+			$builder->orderBy('is_'.$flag, 'DESC');
+		}
+
+		return $builder->orderBy('id', 'ASC')
 			->get();
 	}
 
+	/**
+	 * Return Collection of Addresses owned by the given userID.
+	 *
+	 * @param Collection
+	 */
+	public function getList($userId=null) {
+		$list = array();
+		foreach(self::getAll($userId) as $address) {
+			$list[$address->id] = $address->display;
+		}
+		
+		return $list;
+	}
+	
 	public function __call($name, $arguments) {
 		$flags = \Config::get('addresses::flags');
 
