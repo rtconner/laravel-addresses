@@ -23,7 +23,7 @@ trait Addressable {
 	 * @return Address or null
 	 */
 	public function primaryAddress() {
-		return $this->addresses()->where('is_primary', true)->first();	
+		return $this->addresses()->orderBy('is_primary', 'DESC')->first();	
 	}
 	
 	/**
@@ -32,7 +32,7 @@ trait Addressable {
 	 * @return Address or null
 	 */
 	public function billingAddress() {
-		return $this->addresses()->where('is_billing', true)->first();	
+		return $this->addresses()->orderBy('is_billing', 'DESC')->first();
 	}
 	
 	/**
@@ -41,7 +41,7 @@ trait Addressable {
 	 * @return Address or null
 	 */
 	public function shippingAddress() {
-		return $this->addresses()->where('is_shipping', true)->first();	
+		return $this->addresses()->orderBy('is_shipping', 'DESC')->first();
 	}
 	
 
