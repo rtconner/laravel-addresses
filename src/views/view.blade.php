@@ -1,7 +1,7 @@
 <?php
 
 if(empty($address)) {
-	throw new InvalidValueException('Address is missing');
+	return '';
 }
 
 if(!isset($separator)) {
