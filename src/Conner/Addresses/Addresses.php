@@ -49,10 +49,19 @@ class Addresses {
 				->first();
 		}
 		
-		if($address->update($data)) {
-			self::checkFlags($address);
-			return $address;
+		if(empty($address)) {
+			throw new InvalidOperationException;
 		}
+		
+		$address->fill($data);
+		$flags = \Config::get('addresses::flags');
+		foreach($flags as $flag) {
+			if(array_key_exists('is_'.$flag, $data)) {
+				$address->{'is_'.$flag} = $data['is_'.$flag];
+			}
+		}
+		$address->save();
+		return $address;
 	}
 
 	/**
@@ -295,7 +304,7 @@ class Addresses {
 		$flags = \Config::get('addresses::flags');
 		foreach($flags as $flag) {
 			if($address->{'is_'.$flag}) {
-				call_user_func('self::set'.ucfirst($flag), $address);
+				self::setFlag($flag, $address);
 			}
 		}
 	}

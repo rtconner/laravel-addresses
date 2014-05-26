@@ -147,8 +147,12 @@ class Address extends \Eloquent {
 	    $geocode = file_get_contents('http://maps.google.com/maps/api/geocode/json?address='.$query.'&sensor=false');
 	    $output= json_decode($geocode);
 	    
-	    $this->latitude = $output->results[0]->geometry->location->lat;
-	    $this->longitude = $output->results[0]->geometry->location->lng;
+	    if(count($output->results)) {
+		    $this->latitude = $output->results[0]->geometry->location->lat;
+		    $this->longitude = $output->results[0]->geometry->location->lng;
+	    } else {
+	    	throw new InvalidValueException('Address Could Not be Validated');
+	    }
 
 	    return $this;
     }

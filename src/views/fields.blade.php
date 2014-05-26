@@ -66,6 +66,7 @@
 <div class="form-group">
 	<div class="col-sm-offset-3 col-sm-8">
 		<div class="checkbox">
+			{{ Form::hidden('is_'.$flag, 0); }}
 			<label>
 			{{ Form::checkbox('is_'.$flag); }}
 			Set as {{ ucfirst($flag) }} Address</label>
