@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Collection;
 use Cache;
-use Conner\Inbox\NotLoggedInException;
+use Conner\Addresses\NotLoggedInException;
 
 /**
  * Primary handler for managing addresses
@@ -13,7 +13,7 @@ class Addresses {
 	
 	/**
 	 * Create a new address using post array data
-	 * 
+	 *
 	 * @param array $data
 	 * @return object $address or null
 	 */
@@ -87,7 +87,7 @@ class Addresses {
 	/**
 	 * Return instance of Illuminate\Validation\Validator that is setup with Address rules and data (from html input)
 	 * Addresses::getValidator()->fails(); // test input from user
-	 * 
+	 *
 	 * @param array $input input array from user (or null to default to Input::all())
 	 * @return Illuminate\Validation\Validator ready to test for fails|passes
 	 */
@@ -105,7 +105,7 @@ class Addresses {
 	
 	/**
 	 * Return Collection of Addresses owned by the given userID.
-	 * 
+	 *
 	 * @param Collection
 	 */
 	public function getAll($userId=null) {
@@ -194,7 +194,7 @@ class Addresses {
 	
 	/**
 	 * Return collection of all countries
-	 * 
+	 *
 	 * @return Collection
 	 */
 	public static function getCountries() {
@@ -222,7 +222,7 @@ class Addresses {
 	
 	/**
 	 * Accept 2 or 3 digit alpha-code
-	 * 
+	 *
 	 * @param string $countryA2
 	 * @return $string full country name
 	 */
@@ -261,7 +261,7 @@ class Addresses {
 	/**
 	 * Wrapper for \Form::select that populated the country list automatically
 	 * Defaults to United States as selected
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $selected
 	 * @param array $options
@@ -284,7 +284,7 @@ class Addresses {
 	/**
 	 * Wrapper for \Form::select that populated the state/province list automatically
 	 * Defaults to United States as selected
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $selected
 	 * @param array $options
