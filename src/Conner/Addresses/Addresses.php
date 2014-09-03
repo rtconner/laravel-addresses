@@ -109,17 +109,18 @@ class Addresses {
 	 * @param Collection
 	 */
 	public function getAll($userId=null) {
-		$userId = $userId ?: self::userId();
-
-		$builder = Address::where('user_id', $userId);
-		
-		$flags = \Config::get('addresses::flags');
-		foreach($flags as $flag) {
-			$builder->orderBy('is_'.$flag, 'DESC');
+		if($userId = $userId ?: self::userId(false)) {
+	
+			$builder = Address::where('user_id', $userId);
+			
+			$flags = \Config::get('addresses::flags');
+			foreach($flags as $flag) {
+				$builder->orderBy('is_'.$flag, 'DESC');
+			}
+	
+			return $builder->orderBy('id', 'ASC')
+				->get();
 		}
-
-		return $builder->orderBy('id', 'ASC')
-			->get();
 	}
 
 	/**
@@ -129,10 +130,11 @@ class Addresses {
 	 */
 	public function getList($userId=null) {
 		$list = array();
-		foreach(self::getAll($userId) as $address) {
-			$list[$address->id] = $address->display;
+		if($addresses = self::getAll($userId)) {
+			foreach($addresses as $address) {
+				$list[$address->id] = $address->display;
+			}
 		}
-		
 		return $list;
 	}
 	
@@ -311,7 +313,7 @@ class Addresses {
 		}
 	}
 	
-	private function userId() {
+	private function userId($requred=true) {
 		if(self::$userId) {
 			return self::$userId;
 		}
@@ -321,7 +323,10 @@ class Addresses {
 			return self::$userId;
 		}
 
-		throw new NotLoggedInException;
+		if($requred) {
+			throw new NotLoggedInException;
+		}
+		return null;
 	}
 	
 }
